@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
   const [editingFood, setEditingFood] = useState<IFoodPlate>({} as IFoodPlate);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [idGenerator, setIdGenerator] = useState(3);
 
   useEffect(() => {
     async function loadFoods(): Promise<void> {
@@ -38,8 +39,10 @@ const Dashboard: React.FC = () => {
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     try {
-      Object.assign(food, { id: '123', available: true });
-      setFoods({ ...food });
+      // Object.assign(foods, );
+
+      setIdGenerator(idGenerator + 1);
+      setFoods([...foods, { id: idGenerator, available: true, ...food }]);
     } catch (err) {
       console.log(err);
     }
