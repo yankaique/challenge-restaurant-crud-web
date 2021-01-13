@@ -24,7 +24,6 @@ const Dashboard: React.FC = () => {
   const [editingFood, setEditingFood] = useState<IFoodPlate>({} as IFoodPlate);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [idGenerator, setIdGenerator] = useState(3);
 
   useEffect(() => {
     async function loadFoods(): Promise<void> {
@@ -35,14 +34,17 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
+  const idGenerator = (): number => {
+    return Math.floor(Math.random());
+  };
+
   async function handleAddFood(
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     try {
-      // Object.assign(foods, );
-
-      setIdGenerator(idGenerator + 1);
-      setFoods([...foods, { id: idGenerator, available: true, ...food }]);
+      const requestItem = { id: idGenerator(), available: true, ...food };
+      const response = await api.post('/foods', requestItem);
+      setFoods([...foods, response.data]);
     } catch (err) {
       console.log(err);
     }
@@ -55,7 +57,12 @@ const Dashboard: React.FC = () => {
   }
 
   async function handleDeleteFood(id: number): Promise<void> {
-    // TODO DELETE A FOOD PLATE FROM THE API
+    const foodIndex = foods.findIndex(response => response.id === id);
+
+    foods.splice(foodIndex, 1);
+    setFoods([...foods]);
+
+    await api.delete(`/foods/${id}`);
   }
 
   function toggleModal(): void {
